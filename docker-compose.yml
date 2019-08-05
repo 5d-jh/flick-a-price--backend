@@ -5,7 +5,7 @@ services:
     container_name: node_server
     build: .
     volumes:
-      - ".:/usr/src/app/quaterflix-backend"
+      - "./src:/usr/src/app/quaterflix-backend/src"
     ports:
       - "80:80"
     links:
@@ -14,14 +14,16 @@ services:
   
   mongo_server:
     container_name: mongo_server
-    image: mongo
+    image: mongo:4.0.11
     volumes:
       - "~/mongo_data:/data/db"
+    ports:
+      - "27017:27017"
     expose:
       - "27017"
   
   redis_server:
     container_name: redis_server
-    image: redis
+    image: redis:5
     expose:
      - "6379"

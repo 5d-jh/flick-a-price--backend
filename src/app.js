@@ -8,4 +8,4 @@ app.use('/user', user);
 const pool = require('./modules/pool');
 app.use('/pool', pool);
 
-module.exports = app;
+app.listen(80);
