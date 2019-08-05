@@ -1,13 +1,11 @@
 const express = require('express');
-const mongoose = require('mongoose');
 
 const app = express();
 
-app.get('/', (req, res) => {
-  res.send('hi everybody!')
-});
+const user = require('./modules/user');
+app.use('/user', user);
 
 const pool = require('./modules/pool');
-app.use('/redis', pool);
+app.use('/pool', pool);
 
 module.exports = app;

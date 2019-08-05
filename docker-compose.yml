@@ -16,7 +16,7 @@ services:
     container_name: mongo_server
     image: mongo
     volumes:
-      - "./mongo_data:/data/db"
+      - "~/mongo_data:/data/db"
     expose:
       - "27017"
   
