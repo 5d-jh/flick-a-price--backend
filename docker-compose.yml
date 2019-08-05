@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  quarterflix_server:
+    container_name: node_server
+    build: .
+    volumes:
+      - ".:/usr/src/app/quaterflix-backend"
+    ports:
+      - "80:80"
+    links:
+      - mongo_server
+      - redis_server
+  
+  mongo_server:
+    container_name: mongo_server
+    image: mongo
+    volumes:
+      - "./mongo_data:/data/db"
+    expose:
+      - "27017"
+  
+  redis_server:
+    container_name: redis_server
+    image: redis
+    expose:
+     - "6379"
