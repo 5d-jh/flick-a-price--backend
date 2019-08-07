@@ -6,4 +6,4 @@ WORKDIR /usr/src/app/quaterflix-backend
 EXPOSE 80
 
 RUN npm install
-CMD npm run dev
+CMD npm run debug

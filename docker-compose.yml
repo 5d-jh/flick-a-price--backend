@@ -8,6 +8,7 @@ services:
       - "./src:/usr/src/app/quaterflix-backend/src"
     ports:
       - "80:80"
+      - "9229:9229"
     links:
       - mongo_server
       - redis_server
