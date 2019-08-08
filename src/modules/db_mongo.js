@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+exports.mongoose = mongoose;
+
 exports.model = {
   User: mongoose.model(
     'user',

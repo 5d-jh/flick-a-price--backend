@@ -1,15 +1,25 @@
-const mongo = require('./modules/db_mongo');
+const { mongoose, create, retrieve, model } = require('./modules/db_mongo');
 const express = require('express');
+const session = require('express-session');
 const bcrypt = require('bcrypt');
+const MongoStore = require('connect-mongo')(session);
 
 const router = express.Router();
 
-router.use(express.json());
+mongoose.connect('mongodb://mongo_server/quaterflix', { useNewUrlParser: true });
 
-require('mongoose').connect('mongodb://mongo_server/quaterflix', { useNewUrlParser: true });
+router.use(express.json());
+router.use(session({
+  secret: 'foo',
+  resave: false,
+  saveUninitialized: true,
+  store: new MongoStore({
+    mongooseConnection: mongoose.connection
+  })
+}));
 
 router.post('/create', async (req, res) => {
-  mongo.create(mongo.model.User, {
+  create(model.User, {
     email: req.body.email,
     password: await bcrypt.hash(req.body.password, 10),
     hasNetflixAccount: false
@@ -25,8 +35,26 @@ router.post('/create', async (req, res) => {
   );
 });
 
+router.post('/login', async (req, res) => {
+  const [user] = await retrieve(model.User, { email: req.body.email });
+
+  try {
+    const pass = !(
+      user && await bcrypt.compare(req.body.password, user.password)
+    )
+    if (pass) {
+      return res.send('Username or password are not correct').status(403);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  req.session.email = user.email;
+  res.sendStatus(200);  
+});
+
 router.get('/get', (_, res) => {
-  mongo.retrieve(mongo.model.User, {})
+  retrieve(model.User, {})
   .then(
     doc => res.json(doc)
   )
