@@ -28,7 +28,7 @@ exports.create = async (Model, data) => {
  * @param {object} conditions
  */
 exports.retrieve = async (Model, conditions) => {
-  return await Model.find(conditions);
+  return await Model.findOne(conditions);
 }
 
 /**

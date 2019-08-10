@@ -22,7 +22,7 @@ router.post('/create', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  const [user] = await retrieve(model.User, { email: req.body.email });
+  const user = await retrieve(model.User, { email: req.body.email });
 
   try {
     const pass = !(

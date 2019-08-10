@@ -2,6 +2,15 @@ const redis = require('redis');
 
 const client = redis.createClient('redis://redis_server:6379');
 
+exports.keys = () => (
+  new Promise((resolve, reject) => {
+    client.keys('*', (err, reply) => {
+      if (err) reject(err);
+      resolve(reply);
+    })
+  })
+)
+
 /**
  * @param {string} key
  */
