@@ -8,7 +8,8 @@ exports.model = {
     new mongoose.Schema({
       email: { type: String, required: true, unique: true },
       password: { type: String, required: true },
-      hasNetflixAccount: false,
+      hasNetflixAccount: Boolean,
+      poolkey: String
     })
   )
 }
@@ -28,4 +29,13 @@ exports.create = async (Model, data) => {
  */
 exports.retrieve = async (Model, conditions) => {
   return await Model.find(conditions);
+}
+
+/**
+ * @param {mongoose.Model} Model
+ * @param {object} conditions
+ * @param {object} data
+ */
+exports.update = async (Model, conditions, data) => {
+  return await Model.findOneAndUpdate(conditions, { $set: data });
 }

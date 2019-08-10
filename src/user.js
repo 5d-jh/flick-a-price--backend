@@ -1,22 +1,8 @@
-const { mongoose, create, retrieve, model } = require('./modules/db_mongo');
+const { create, retrieve, model } = require('./modules/db_mongo');
 const express = require('express');
-const session = require('express-session');
 const bcrypt = require('bcrypt');
-const MongoStore = require('connect-mongo')(session);
 
 const router = express.Router();
-
-mongoose.connect('mongodb://mongo_server/quaterflix', { useNewUrlParser: true });
-
-router.use(express.json());
-router.use(session({
-  secret: 'foo',
-  resave: false,
-  saveUninitialized: true,
-  store: new MongoStore({
-    mongooseConnection: mongoose.connection
-  })
-}));
 
 router.post('/create', async (req, res) => {
   create(model.User, {
