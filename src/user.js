@@ -39,6 +39,17 @@ router.post('/login', async (req, res) => {
   res.sendStatus(200);  
 });
 
+router.get('/logout', async (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      res.sendStatus(500);
+      console.error(err);
+      return;
+    }
+    res.sendStatus(200);
+  });
+});
+
 router.get('/get', (_, res) => {
   retrieve(model.User, {})
   .then(
