@@ -1,11 +1,15 @@
 {
-  "name": "quarterflix-backend",
+  "name": "flick-a-price--backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
+  "description": "Flick A Price backend server script runs on Docker container.",
+  "main": "src/index.js",
   "scripts": {
     "debug": "nodemon --inspect src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/5d-jh/flick-a-price--backend.git"
   },
   "author": "",
   "license": "ISC",
