@@ -1,7 +1,7 @@
 FROM node:10
 
-ADD . /usr/src/app/quaterflix-backend
-WORKDIR /usr/src/app/quaterflix-backend
+ADD . /usr/src/app
+WORKDIR /usr/src/app
 
 EXPOSE 80
 

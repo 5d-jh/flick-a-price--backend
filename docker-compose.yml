@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  quarterflix_server:
-    container_name: node_server
+  flickap_backend_server:
+    container_name: flickap_backend_server
     build: .
     volumes:
       - "./src:/usr/src/app/quaterflix-backend/src"
