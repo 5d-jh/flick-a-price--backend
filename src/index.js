@@ -5,7 +5,8 @@ const { mongoose } = require('./modules/db_mongo');
 
 const app = express();
 
-mongoose.connect('mongodb://mongo_server/quaterflix', { useNewUrlParser: true });
+mongoose.connect('mongodb://mongo_server/quaterflix', { useNewUrlParser: true })
+.catch(err => err);
 
 app.use(express.json());
 app.use(
@@ -24,5 +25,14 @@ app.use('/user', user);
 
 const pool = require('./pool');
 app.use('/pool', pool);
+
+app.use((_, res) => {
+  res.sendStatus(404);
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.sendStatus(500);
+});
 
 app.listen(80);

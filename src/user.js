@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 const router = express.Router();
 
-router.post('/create', async (req, res) => {
+router.post('/create', async (req, res, next) => {
   create(model.User, {
     email: req.body.email,
     password: await bcrypt.hash(req.body.password, 10),
@@ -14,52 +14,42 @@ router.post('/create', async (req, res) => {
     () => res.sendStatus(200)
   )
   .catch(
-    err => {
-      res.sendStatus(500);
-      console.error(err);
-    }
+    err => next(err)
   );
 });
 
-router.post('/login', async (req, res) => {
-  const user = await retrieve(model.User, { email: req.body.email });
-
+router.post('/login', async (req, res, next) => {
   try {
+    const user = await retrieve(model.User, { email: req.body.email });
+
     const pass = !(
       user && await bcrypt.compare(req.body.password, user.password)
     )
     if (pass) {
-      return res.send('Username or password are not correct').status(403);
+      return res.status(403).send('Username or password are not correct');
     }
   } catch (err) {
-    console.error(err);
+    return next(err);
   }
 
   req.session.email = user.email;
   res.sendStatus(200);  
 });
 
-router.get('/logout', async (req, res) => {
+router.get('/logout', async (req, res, next) => {
   req.session.destroy(err => {
-    if (err) {
-      res.sendStatus(500);
-      console.error(err);
-      return;
-    }
+    if (err) return next(err);
     res.sendStatus(200);
   });
 });
 
-router.get('/get', (_, res) => {
+router.get('/get', (_, res, next) => {
   retrieve(model.User, {})
   .then(
     doc => res.json(doc)
   )
   .catch(
-    err => {
-      res.sendStatus(500);
-      console.error(err);
-    }
+    err => next(err)
   );
 });
 

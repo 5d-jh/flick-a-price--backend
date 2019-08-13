@@ -9,24 +9,23 @@ router.use((req, res, next) => {
   next();
 });
 
-router.get('/list', async (req, res) => {
+router.get('/list', async (_, res) => {
   const list = await redis.keys();
   res.json(list);
 });
 
-router.post('/create', async (req, res) => {
+router.post('/create', async (req, res, next) => {
   try {
     const poolkey = new Date().getTime().toString(16);
     const result = await redis.set(poolkey, '1');
     await mongo.update(mongo.model.User, { email: req.session.email }, { poolkey });
     res.send(result);
   } catch (err) {
-    res.sendStatus(500);
-    console.error(err);
+    return next(err);
   }
 });
 
-router.get('/join', async (req, res) => {
+router.get('/join', async (req, res, next) => {
   try {
     const poolkey = await redis.randomkey();
 
@@ -45,26 +44,29 @@ router.get('/join', async (req, res) => {
       joinedUsers: poolcnt+1
     });
   } catch (err) {
-    res.sendStatus(500)
-    console.error(err);
+    return next(err);
   }
 });
 
-router.get('/status', async (req, res) => {
-  const { poolkey } = await mongo.retrieve(mongo.model.User, { email: req.session.email });
-  if (poolkey) {
-    const poolcnt = Number(await redis.get(poolkey));
-    res.send({
-      hasJoinedPool: true,
-      isFull: Boolean(!poolcnt),
-        //Pool count is removed when pool is full; if poolcnt exists, pool isn't full.
-      remainingVacancy: !poolcnt ? 0 : 4 - poolcnt
-        //Show it if isFull is false
-    });
-  } else {
-    res.send({
-      hasJoinedPool: false
-    });
+router.get('/status', async (req, res, next) => {
+  try {
+    const { poolkey } = await mongo.retrieve(mongo.model.User, { email: req.session.email });
+    if (poolkey) {
+      const poolcnt = Number(await redis.get(poolkey));
+      res.send({
+        hasJoinedPool: true,
+        isFull: poolcnt === 4,
+          //Pool count is removed when pool is full; if poolcnt exists, pool isn't full.
+        remainingVacancy: !poolcnt ? 0 : 4 - poolcnt
+          //Show it if isFull is false
+      });
+    } else {
+      res.send({
+        hasJoinedPool: false
+      });
+    }
+  } catch (err) {
+    return next(err);
   }
 });
 
