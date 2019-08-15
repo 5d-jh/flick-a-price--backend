@@ -1,15 +1,15 @@
-const { create, retrieve, model } = require('./modules/db_mongo');
+const { User } = require('./modules/mongo_models');
 const express = require('express');
 const bcrypt = require('bcrypt');
 
 const router = express.Router();
 
 router.post('/create', async (req, res, next) => {
-  create(model.User, {
+  new User({
     email: req.body.email,
     password: await bcrypt.hash(req.body.password, 10),
     hasNetflixAccount: false
-  })
+  }).save()
   .then(
     () => res.sendStatus(200)
   )
@@ -19,17 +19,16 @@ router.post('/create', async (req, res, next) => {
 });
 
 router.post('/login', async (req, res, next) => {
-  try {
-    const user = await retrieve(model.User, { email: req.body.email });
+  const user = await User.findOne({ email: req.body.email })
+  .catch(
+    err => next(err)
+  );
 
-    const pass = !(
-      user && await bcrypt.compare(req.body.password, user.password)
-    )
-    if (pass) {
-      return res.status(403).send('Username or password are not correct');
-    }
-  } catch (err) {
-    return next(err);
+  const pass = !(
+    user && await bcrypt.compare(req.body.password, user.password)
+  );
+  if (pass) {
+    return res.status(403).send('Username or password are not correct');
   }
 
   req.session.email = user.email;
@@ -41,16 +40,6 @@ router.get('/logout', async (req, res, next) => {
     if (err) return next(err);
     res.sendStatus(200);
   });
-});
-
-router.get('/get', (_, res, next) => {
-  retrieve(model.User, {})
-  .then(
-    doc => res.json(doc)
-  )
-  .catch(
-    err => next(err)
-  );
 });
 
 module.exports = router;

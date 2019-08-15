@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const redis = require('./modules/db_redis');
-const mongo = require('./modules/db_mongo');
+const { User } = require('./modules/mongo_models');
 
 router.use((req, res, next) => {
   if (!req.session.email) {
@@ -18,7 +18,7 @@ router.post('/create', async (req, res, next) => {
   try {
     const poolkey = new Date().getTime().toString(16);
     const result = await redis.set(poolkey, '1');
-    await mongo.update(mongo.model.User, { email: req.session.email }, { poolkey });
+    await User.findOneAndUpdate({ email: req.session.email }, { poolkey });
     res.send(result);
   } catch (err) {
     return next(err);
@@ -37,7 +37,7 @@ router.get('/join', async (req, res, next) => {
     }
 
     await redis.set(poolkey, poolcnt+1);
-    await mongo.update(mongo.model.User, { email: req.session.email }, { poolkey });
+    await User.findOneAndUpdate({ email: req.session.email }, { poolkey });
 
     res.json({
       status: 'Joined',
@@ -50,7 +50,7 @@ router.get('/join', async (req, res, next) => {
 
 router.get('/status', async (req, res, next) => {
   try {
-    const { poolkey } = await mongo.retrieve(mongo.model.User, { email: req.session.email });
+    const { poolkey } = await User.findOne({ email: req.session.email });
     if (poolkey) {
       const poolcnt = Number(await redis.get(poolkey));
       res.send({
