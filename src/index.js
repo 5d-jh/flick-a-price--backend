@@ -1,7 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
-const { mongoose } = require('./modules/db_mongo');
+const mongoose = require('mongoose');
 
 const app = express();
 
